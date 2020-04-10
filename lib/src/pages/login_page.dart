@@ -81,17 +81,81 @@ class LoginPage extends StatelessWidget {
           ),
           Container(
             width: size.width * 0.85,
+            margin: EdgeInsets.symmetric(vertical: 10.0),
+            padding: EdgeInsets.symmetric(vertical: 50.0),
             decoration: BoxDecoration(
-              color: Colors.white,
-            ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5.0),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 3.0,
+                    offset: Offset(0.0, 3.0),
+                    spreadRadius: 2.0,
+                  ),
+                ]),
             child: Column(
               children: <Widget>[
                 Text('Ingreso', style: TextStyle(fontSize: 20.0)),
+                SizedBox(height: 60.0),
+                _emailField(),
+                SizedBox(height: 30.0),
+                _passwordField(),
+                SizedBox(height: 30.0),
+                _loginButton(),
               ],
             ),
-          )
+          ),
+          SizedBox(height: 20.0),
+          Text('Forgot Password?'),
+          SizedBox(height: 100.0),
         ],
       ),
+    );
+  }
+
+  _emailField() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextField(
+        keyboardType: TextInputType.emailAddress,
+        decoration: InputDecoration(
+            icon: Icon(
+              Icons.alternate_email,
+              color: Colors.deepPurple,
+            ),
+            hintText: 'example@email.com',
+            labelText: 'Email Adress'),
+      ),
+    );
+  }
+
+  _passwordField() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextField(
+        obscureText: true,
+        decoration: InputDecoration(
+            icon: Icon(
+              Icons.lock_outline,
+              color: Colors.deepPurple,
+            ),
+            labelText: 'Password'),
+      ),
+    );
+  }
+
+  _loginButton() {
+    return RaisedButton(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 15.0),
+        child: Text('Login'),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+      elevation: 0.0,
+      color: Colors.deepPurple,
+      textColor: Colors.white,
+      onPressed: () {},
     );
   }
 }
