@@ -8,14 +8,14 @@ String productModelToJson(ProductModel data) => json.encode(data.toJson());
 class ProductModel {
   String id;
   String title;
-  double value;
+  double price;
   bool available;
   String photoUrl;
 
   ProductModel({
     this.id,
     this.title = '',
-    this.value = 0.0,
+    this.price = 0.0,
     this.available = true,
     this.photoUrl,
   });
@@ -23,15 +23,15 @@ class ProductModel {
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
         id: json["id"],
         title: json["title"],
-        value: json["value"],
+        price: json["price"],
         available: json["available"],
         photoUrl: json["photoUrl"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        // "id": id,
         "title": title,
-        "value": value,
+        "price": price,
         "available": available,
         "photoUrl": photoUrl,
       };

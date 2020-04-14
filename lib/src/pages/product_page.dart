@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_validation_bloc/src/models/product_model.dart';
+import 'package:form_validation_bloc/src/providers/products_providers.dart';
 import 'package:form_validation_bloc/src/utils/utils.dart' as utils;
 
 class ProductPage extends StatefulWidget {
@@ -9,11 +10,20 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   final formkey = GlobalKey<FormState>();
+  final scaffoldkey = GlobalKey<ScaffoldState>();
+  final productsProvider = new ProductsProvider();
   ProductModel product = new ProductModel();
+
   @override
   Widget build(BuildContext context) {
+    final ProductModel prodArgs = ModalRoute.of(context).settings.arguments;
+    if (prodArgs != null) {
+      product = prodArgs;
+    }
+
     return Container(
       child: Scaffold(
+        key: scaffoldkey,
         appBar: AppBar(
           title: Text('Product'),
           actions: <Widget>[
@@ -61,13 +71,13 @@ class _ProductPageState extends State<ProductPage> {
 
   Widget _priceField() {
     return TextFormField(
-      initialValue: product.value.toString(),
+      initialValue: product.price.toString(),
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(
         labelText: 'Price',
       ),
       //The onSaved function is called after the validator is applied so at this point we are sure that the value is a number because od the utils.isNumber function
-      onSaved: (value) => product.value = double.parse(value),
+      onSaved: (value) => product.price = double.parse(value),
       validator: (value) {
         if (utils.isNumber(value)) {
           return null;
@@ -108,7 +118,26 @@ class _ProductPageState extends State<ProductPage> {
 
     print('All OK');
     print(product.title);
-    print(product.value);
+    print(product.price);
     print(product.available);
+
+    if (product.id == null) {
+      productsProvider.addProduct(product);
+    } else {
+      productsProvider.editProduct(product);
+    }
+
+    showSnackbar('Product Saved.');
+  }
+
+  void showSnackbar(String message) {
+    final snackbar = SnackBar(
+      content: Text(message),
+      duration: Duration(milliseconds: 1500),
+      // behavior: SnackBarBehavior.floating,
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
+      // backgroundColor: Colors.grey[600],
+    );
+    scaffoldkey.currentState.showSnackBar(snackbar);
   }
 }
