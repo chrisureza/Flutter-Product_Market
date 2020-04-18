@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:form_validation_bloc/src/models/product_model.dart';
 import 'package:form_validation_bloc/src/providers/products_providers.dart';
 import 'package:form_validation_bloc/src/utils/utils.dart' as utils;
+import 'package:image_picker/image_picker.dart';
 
 class ProductPage extends StatefulWidget {
   @override
@@ -13,6 +16,8 @@ class _ProductPageState extends State<ProductPage> {
   final scaffoldkey = GlobalKey<ScaffoldState>();
   final productsProvider = new ProductsProvider();
   ProductModel product = new ProductModel();
+  bool _saving = false;
+  File photo;
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +33,9 @@ class _ProductPageState extends State<ProductPage> {
           title: Text('Product'),
           actions: <Widget>[
             IconButton(
-                icon: Icon(Icons.photo_size_select_actual), onPressed: () {}),
-            IconButton(icon: Icon(Icons.camera_alt), onPressed: () {}),
+                icon: Icon(Icons.photo_size_select_actual),
+                onPressed: _selectImage),
+            IconButton(icon: Icon(Icons.camera_alt), onPressed: _takePicture),
           ],
         ),
         body: SingleChildScrollView(
@@ -39,6 +45,7 @@ class _ProductPageState extends State<ProductPage> {
               key: formkey,
               child: Column(
                 children: <Widget>[
+                  _showPhoto(),
                   _nameField(),
                   _priceField(),
                   _availableField(context),
@@ -105,29 +112,36 @@ class _ProductPageState extends State<ProductPage> {
       textColor: Colors.white,
       label: Text('Save'),
       icon: Icon(Icons.save),
-      onPressed: _submit,
+      onPressed: !_saving ? _submit : null,
     );
   }
 
-  void _submit() {
+  void _submit() async {
     // Is not a valid form then escape the function
     if (!formkey.currentState.validate()) return;
 
     //This line trigger the onSave Methods for all the fields into the form
     formkey.currentState.save();
 
-    print('All OK');
-    print(product.title);
-    print(product.price);
-    print(product.available);
+    setState(() {
+      _saving = true;
+    });
+
+    if (photo != null) {
+      product.photoUrl = await productsProvider.uploadImg(photo);
+    }
 
     if (product.id == null) {
       productsProvider.addProduct(product);
     } else {
       productsProvider.editProduct(product);
     }
-
+    setState(() {
+      _saving = false;
+    });
     showSnackbar('Product Saved.');
+
+    Navigator.pop(context);
   }
 
   void showSnackbar(String message) {
@@ -139,5 +153,43 @@ class _ProductPageState extends State<ProductPage> {
       // backgroundColor: Colors.grey[600],
     );
     scaffoldkey.currentState.showSnackBar(snackbar);
+  }
+
+  _showPhoto() {
+    if (product.photoUrl != null) {
+      return FadeInImage(
+        placeholder: AssetImage('assets/jar-loading.gif'),
+        image: NetworkImage(product.photoUrl),
+        height: 300.0,
+        fit: BoxFit.cover,
+      );
+    } else {
+      if (photo != null) {
+        return Image.file(
+          photo,
+          height: 300.0,
+          fit: BoxFit.cover,
+        );
+      }
+      return Image.asset('assets/no-image.png');
+    }
+  }
+
+  void _selectImage() async {
+    _processImg(ImageSource.gallery);
+  }
+
+  void _takePicture() async {
+    _processImg(ImageSource.camera);
+  }
+
+  void _processImg(ImageSource source) async {
+    photo = await ImagePicker.pickImage(source: source);
+    print(photo);
+    if (photo != null) {
+      product.photoUrl = null;
+    }
+
+    setState(() {});
   }
 }

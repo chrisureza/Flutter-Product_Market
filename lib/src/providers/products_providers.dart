@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:form_validation_bloc/src/models/product_model.dart';
+import 'package:mime_type/mime_type.dart';
 
 class ProductsProvider {
   final String _url = 'https://flutter-curso-udemy-28b08.firebaseio.com';
@@ -52,5 +55,38 @@ class ProductsProvider {
     print(json.decode(response.body));
 
     return 1;
+  }
+
+  Future<String> uploadImg(File img) async {
+    final url = Uri.parse(
+        'https://api.cloudinary.com/v1_1/dsvmtijoe/image/upload?upload_preset=z6rmgt4k');
+    final mimeType = mime(img.path).split('/');
+    final imgUploadRequest = http.MultipartRequest(
+      'POST',
+      url,
+    );
+
+    final file = await http.MultipartFile.fromPath(
+      'file',
+      img.path,
+      contentType: MediaType(mimeType[0], mimeType[1]),
+    );
+
+    imgUploadRequest.files.add(file);
+
+    final streamResponse = await imgUploadRequest.send();
+    final resp = await http.Response.fromStream(streamResponse);
+
+    if (resp.statusCode != 200 && resp.statusCode != 201) {
+      print('Someting went wrong');
+      print(resp.body);
+      return null;
+    }
+    final respData = json.decode(resp.body);
+
+    print('respData:');
+    print(respData);
+
+    return respData['secure_url'];
   }
 }
