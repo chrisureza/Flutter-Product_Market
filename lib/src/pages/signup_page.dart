@@ -3,7 +3,7 @@ import 'package:form_validation_bloc/src/blocs/provider.dart';
 import 'package:form_validation_bloc/src/providers/user_provider.dart';
 import 'package:form_validation_bloc/src/utils/utils.dart';
 
-class LoginPage extends StatelessWidget {
+class SignupPage extends StatelessWidget {
   final userProvider = new UserProvider();
 
   @override
@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           _backgroundHero(context),
-          _loginForm(context),
+          _singupForm(context),
         ],
       ),
     );
@@ -73,7 +73,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  _loginForm(BuildContext context) {
+  _singupForm(BuildContext context) {
     final bloc = Provider.of(context);
     final size = MediaQuery.of(context).size;
 
@@ -102,21 +102,20 @@ class LoginPage extends StatelessWidget {
                 ]),
             child: Column(
               children: <Widget>[
-                Text('Fill your account data',
-                    style: TextStyle(fontSize: 20.0)),
+                Text('Sign Up', style: TextStyle(fontSize: 20.0)),
                 SizedBox(height: 60.0),
                 _emailField(bloc),
                 SizedBox(height: 30.0),
                 _passwordField(bloc),
                 SizedBox(height: 30.0),
-                _loginButton(bloc),
+                _signupButton(bloc),
               ],
             ),
           ),
           SizedBox(height: 20.0),
           FlatButton(
-            child: Text('Create an account'),
-            onPressed: () => Navigator.pushReplacementNamed(context, 'signup'),
+            child: Text('Do you have an account? Log in'),
+            onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
           ),
           SizedBox(height: 100.0),
         ],
@@ -173,7 +172,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  _loginButton(LoginBloc bloc) {
+  _signupButton(LoginBloc bloc) {
     //validFormStream
     return StreamBuilder(
       stream: bloc.validFormStream,
@@ -181,21 +180,21 @@ class LoginPage extends StatelessWidget {
         return RaisedButton(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 15.0),
-            child: Text('Login'),
+            child: Text('Sign Up'),
           ),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
           elevation: 0.0,
           color: Colors.deepPurple,
           textColor: Colors.white,
-          onPressed: snapshot.hasData ? () => _login(context, bloc) : null,
+          onPressed: snapshot.hasData ? () => _singup(context, bloc) : null,
         );
       },
     );
   }
 
-  _login(BuildContext context, LoginBloc bloc) async {
-    Map info = await userProvider.login(bloc.email, bloc.password);
+  _singup(BuildContext context, LoginBloc bloc) async {
+    final info = await userProvider.newUser(bloc.email, bloc.password);
 
     if (info['ok']) {
       Navigator.pushReplacementNamed(context, 'home');
