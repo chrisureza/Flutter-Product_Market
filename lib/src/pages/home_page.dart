@@ -11,6 +11,25 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Home"),
+        actions: <Widget>[
+          PopupMenuButton(
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                  value: 'about',
+                  child: Text('About'),
+                ),
+              ];
+            },
+            onSelected: (result) {
+              switch (result) {
+                case 'about':
+                  Navigator.pushNamed(context, 'about');
+                  break;
+              }
+            },
+          ),
+        ],
       ),
       body: _listOfProducts(productsBloc),
       floatingActionButton: _floatingActionButton(context),

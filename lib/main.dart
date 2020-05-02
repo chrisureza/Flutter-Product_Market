@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_validation_bloc/src/blocs/provider.dart';
+import 'package:form_validation_bloc/src/pages/about_page.dart';
 import 'package:form_validation_bloc/src/pages/home_page.dart';
 import 'package:form_validation_bloc/src/pages/login_page.dart';
 import 'package:form_validation_bloc/src/pages/product_page.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
           'signup': (BuildContext context) => SignupPage(),
           'home': (BuildContext context) => HomePage(),
           'product': (BuildContext context) => ProductPage(),
+          'about': (BuildContext context) => AboutPage(),
         },
         theme: ThemeData(primaryColor: Colors.deepPurple),
       ),
